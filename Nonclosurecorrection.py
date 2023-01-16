@@ -5,7 +5,7 @@ import json
 from array import array
 from ROOT import TF1
 import argparse
-
+import QCD_weights as qcdweights
 def main() :
 
     rt.gStyle.SetPaintTextFormat("4.2f")
@@ -23,7 +23,7 @@ def main() :
     era=args.era
     
     config = ConfigParser.ConfigParser()
-    config.read('settings_for_QCD.cfg')
+    config.read('setting_for_QCD.cfg')
     if (era=="2018"): 
          inDir=config.get('INPUT','input_directory_2018')
     elif (era=="2017"):
@@ -36,12 +36,12 @@ def main() :
     
     jet_selection = dict(config.items('JET_BINS'))
     # read in trees ----------------------------------------------------------------------------------------------------------------
-    f_Data,t_Data = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_MuonEG_"+era+".root","TauCheck")
-    f_DY,t_DY = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_DYJets_"+era+".root","TauCheck")
-    f_SingleTop,t_SingleTop = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_SingleTop_"+era+".root","TauCheck")
-    f_TTbar,t_TTbar = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_TTbar_"+era+".root","TauCheck")
-    f_WJets,t_WJets = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_WJets_"+era+".root","TauCheck")
-    f_Diboson,t_Diboson = qcdweights.openTree(inDir+"em-NOMINAL_ntuple_Diboson_"+era+".root","TauCheck")
+    f_Data,t_Data = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_MuonEG_"+era+".root","TauCheck")
+    f_DY,t_DY = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_DYJets_"+era+".root","TauCheck")
+    f_SingleTop,t_SingleTop = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_SingleTop_"+era+".root","TauCheck")
+    f_TTbar,t_TTbar = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_TTbar_"+era+".root","TauCheck")
+    f_WJets,t_WJets = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_WJets_"+era+".root","TauCheck")
+    f_Diboson,t_Diboson = qcdweights.openTree(inDir+"/em-NOMINAL_ntuple_Diboson_"+era+".root","TauCheck")
     trees = {"data" : t_Data, "dy" : t_DY, "singletop": t_SingleTop, "ttbar" : t_TTbar, "wjets": t_WJets, "diboson": t_Diboson}
 
     # read in fitted functions for weights in bins of njet and deltaR --------------------------------------------------------------
@@ -108,40 +108,40 @@ def main() :
                     continue
                 if njets==0 :
                     qcdweight = transfer_functions["njet0"].Eval(dr_tt)
-                elif njets ==1 :
-                    qcdweight = transfer_functions["njet1"].Eval(dr_tt)
-                else :
-                    qcdweight = transfer_functions["njetgt2"].Eval(dr_tt)
+                #elif njets ==1 :
+                 #   qcdweight = transfer_functions["njet1"].Eval(dr_tt)
+                #else :
+                  #  qcdweight = transfer_functions["njetgt2"].Eval(dr_tt)
                 if os > 0.5 :
                     if process == "data" :
                         h_OS.Fill(pt_2,pt_1,weight)
-                    else :
-                        h_OS_bg.Fill(pt_2,pt_1,weight)
+                    #else :
+                    #    h_OS_bg.Fill(pt_2,pt_1,weight)
                 else :
                     if process == "data" :
                         h_SS.Fill(pt_2,pt_1,weight*qcdweight)
-                    else :
-                        h_SS_bg.Fill(pt_2,pt_1,weight*qcdweight)
+                    #else :
+                     #   h_SS_bg.Fill(pt_2,pt_1,weight*qcdweight)
             # fill histograms for weights for validation region -----------------------------------------------------------------------
             if (iso_1 > float(config.get('SELECTION','iso_1')) and iso_1 < float(config.get('SELECTION','iso_max'))) :
                 if (iso_2 < float(config.get('SELECTION','iso_2'))) or (iso_2 > float(config.get('SELECTION','iso_max'))) :
                     continue
                 if njets==0 :
                     qcdweight = transfer_functions_validation["njet0"].Eval(dr_tt)
-                elif njets ==1 :
-                    qcdweight = transfer_functions_validation["njet1"].Eval(dr_tt)
-                else :
-                    qcdweight = transfer_functions_validation["njetgt2"].Eval(dr_tt)
+                #elif njets ==1 :
+                 #   qcdweight = transfer_functions_validation["njet1"].Eval(dr_tt)
+                #else :
+                 #   qcdweight = transfer_functions_validation["njetgt2"].Eval(dr_tt)
                 if os > 0.5 :
                     if process == "data" :
                         h_OS_validation.Fill(pt_2,pt_1,weight)
-                    else :
-                        h_OS_bg_validation.Fill(pt_2,pt_1,weight)
+                    #else :
+                    #    h_OS_bg_validation.Fill(pt_2,pt_1,weight)
                 else :
                     if process == "data" :
                         h_SS_validation.Fill(pt_2,pt_1,weight*qcdweight)
-                    else :
-                        h_SS_bg_validation.Fill(pt_2,pt_1,weight*qcdweight)
+                   # else :
+                    #    h_SS_bg_validation.Fill(pt_2,pt_1,weight*qcdweight)
 
     # determine non-closure correction ---------------------------------------------------------------------------------------------------
     h_OS.Add(h_OS_bg,-1.)
