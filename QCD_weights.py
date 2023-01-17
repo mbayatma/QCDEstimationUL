@@ -48,6 +48,8 @@ def main():
     xmin = float(config.get('OUTPUT','xmin'))
     xmax = float(config.get('OUTPUT','xmax'))
 
+#currently running for different Njets is done separately and the root files are hadd together, Instead of Recreate maybe update the root file everytime -> gives segmentation fault now! have to think how to fix this    
+    
     if (era=="2018"):
         outFile = rt.TFile(config.get('OUTPUT','outFile_2018'), "RECREATE")
     elif (era=="2017"):
