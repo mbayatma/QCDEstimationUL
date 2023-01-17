@@ -65,19 +65,24 @@ def main():
     f3,tree_SingleTop = f.openTree(inDir+"/em-NOMINAL_ntuple_SingleTop_"+era+".root", "TauCheck" )          
     f4,tree_WJets = f.openTree(inDir+"/em-NOMINAL_ntuple_WJets_"+era+".root" , "TauCheck"       )
     f5,tree_Diboson = f.openTree(inDir+"/em-NOMINAL_ntuple_Diboson_"+era+".root" , "TauCheck" )
-    bkg_trees= {"dy": tree_DYJets, "singletop": tree_SingleTop, "ttbar": tree_TTbar, "wjets": tree_WJets, "diboson": tree_Diboson}
+    
+    bg_trees= {"dy": tree_DYJets, "singletop": tree_SingleTop, "ttbar": tree_TTbar, "wjets": tree_WJets, "diboson": tree_Diboson}
      
 
 # Create canvas
     c = rt.TCanvas("c", "canvas", 800,800)
     
-    for jetbin in jet_selection:
+    for jetbins in jet_selection:
         bins = [0.3,0.9,1.5,2.0,2.4,2.8,3.2,3.6,4.0,4.4,4.8,6.0]  #v1
         nbins =11
-        
-        #if (jetbin=="njet0") :
-        #    bins = [0.5,2.5,3,3.5,4,4.5] #v1
-        #    nbins=5 
+        if (jetbins=="njet0") :
+            bins = [0.3,1.2,2.0,2.6,3.2,3.8,4.4,5.0,6.0] #v1
+            nbins=8
+        #    bins = [0.3,1.2,2.0,2.6,3.2,3.8,4.4,5.0,6.0] #v1
+        #    nbins=8
+        #if (jetbins=="njet0") :
+         #   bins = [0.5,2.5,3,3.5,4,4.5] #v1
+          #  nbins=5 
         #elif (jetbin=="njet1") :
         #    bins = [0.5,2.5,3,3.5,4,4.5] #v1
         #    nbins=5 
@@ -103,37 +108,39 @@ def main():
         h_os_bg_total_validation = None
         h_ss_bg_total_validation = None
         
-        tree_Data.Draw("dr_tt>>hist_os",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_os + "&&" + jet_selection[jetbin])
-        tree_Data.Draw("dr_tt>>hist_ss",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_ss + "&&" + jet_selection[jetbin])
-        tree_Data.Draw("dr_tt>>hist_os_validation",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_os + "&&" + jet_selection[jetbin])
-        tree_Data.Draw("dr_tt>>hist_ss_validation",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_ss + "&&" + jet_selection[jetbin])
+        tree_Data.Draw("dr_tt>>hist_os",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_os + "&&" + jet_selection[jetbins])
+        tree_Data.Draw("dr_tt>>hist_ss",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_ss + "&&" + jet_selection[jetbins])
+        tree_Data.Draw("dr_tt>>hist_os_validation",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_os + "&&" + jet_selection[jetbins])
+        tree_Data.Draw("dr_tt>>hist_ss_validation",preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_ss + "&&" + jet_selection[jetbins])
         print ("os: data: integral " + str(h_os.Integral()))
         print ("ss: data: integral " + str(h_ss.Integral()))
         
-    for bg in bkg_trees:
-        bkg_trees[bg].Draw("dr_tt>>hist_os_bg",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_os + "&&" + jet_selection[jetbin] + ")")
-        bkg_trees[bg].Draw("dr_tt>>hist_ss_bg",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_ss + "&&" + jet_selection[jetbin] + ")")
-        bkg_trees[bg].Draw("dr_tt>>hist_os_bg_validation",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_os + "&&" + jet_selection[jetbin] + ")")
-        bkg_trees[bg].Draw("dr_tt>>hist_ss_bg_validation",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_ss + "&&" + jet_selection[jetbin] + ")")
-        print ("os: background: integral " + bg + " " + str(h_os_bg.Integral()))
-        print ("ss: background: integral " + bg + " " + str(h_ss_bg.Integral()))    
-        if h_os_bg_total is None :
-            h_os_bg_total = h_os_bg.Clone()
-            h_ss_bg_total = h_ss_bg.Clone()
-            h_os_bg_total_validation = h_os_bg_validation.Clone()
-            h_ss_bg_total_validation = h_ss_bg_validation.Clone()
-        else :
-            h_os_bg_total.Add(h_os_bg)
-            h_ss_bg_total.Add(h_ss_bg)
-            h_os_bg_total_validation.Add(h_os_bg_validation)
-            h_ss_bg_total_validation.Add(h_os_bg_validation)
+        for bg in bg_trees:
+            bg_trees[bg].Draw("dr_tt>>hist_os_bg",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_os + "&&" + jet_selection[jetbins] + ")")
+            bg_trees[bg].Draw("dr_tt>>hist_ss_bg",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_iso + "&&" + selection_ss + "&&" + jet_selection[jetbins] + ")")
+            bg_trees[bg].Draw("dr_tt>>hist_os_bg_validation",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_os + "&&" + jet_selection[jetbins] + ")")
+            bg_trees[bg].Draw("dr_tt>>hist_ss_bg_validation",weights_common + "*(" + preselection + "&&" + selection_muon_antiiso + "&&" + selection_electron_antiiso + "&&" + selection_ss + "&&" + jet_selection[jetbins] + ")")
+        
+            print ("os: background: integral " + bg + " " + str(h_os_bg.Integral()))
+            print ("ss: background: integral " + bg + " " + str(h_ss_bg.Integral()))    
+        
+            if h_os_bg_total is None :
+                h_os_bg_total = h_os_bg.Clone()
+                h_ss_bg_total = h_ss_bg.Clone()
+                h_os_bg_total_validation = h_os_bg_validation.Clone()
+                h_ss_bg_total_validation = h_ss_bg_validation.Clone()
+            else :
+                h_os_bg_total.Add(h_os_bg)
+                h_ss_bg_total.Add(h_ss_bg)
+                h_os_bg_total_validation.Add(h_os_bg_validation)
+                h_ss_bg_total_validation.Add(h_os_bg_validation)
         
        
-        print ("BG / OS DATA = " + str(h_os_bg_total.Integral()/h_os.Integral()) + " in category " + str(jetbin))
-        print ("BG / SS DATA = " + str(h_ss_bg_total.Integral()/h_ss.Integral()) + " in category " + str(jetbin))
+        print ("BG / OS DATA = " + str(h_os_bg_total.Integral()/h_os.Integral()) + " in category " + str(jetbins))
+        print ("BG / SS DATA = " + str(h_ss_bg_total.Integral()/h_ss.Integral()) + " in category " + str(jetbins))
 
-        print ("BG / OS DATA (validation region) = " + str(h_os_bg_total_validation.Integral()/h_os_validation.Integral()) + " in category " + str(jetbin))
-        print ("BG / SS DATA (validation region) = " + str(h_ss_bg_total_validation.Integral()/h_ss_validation.Integral()) + " in category " + str(jetbin))
+        print ("BG / OS DATA (validation region) = " + str(h_os_bg_total_validation.Integral()/h_os_validation.Integral()) + " in category " + str(jetbins))
+        print ("BG / SS DATA (validation region) = " + str(h_ss_bg_total_validation.Integral()/h_ss_validation.Integral()) + " in category " + str(jetbins))
        
         print ("Data before subtraction : " + str(h_os.Integral()))
         print ("BG before subtraction : " + str(h_os_bg_total.Integral()))
@@ -196,13 +203,13 @@ def main():
         outFile.cd()
         transfer_function = ratio.GetFunction("pol2");
         transfer_function = ratio.GetFunction("f1");
-        transfer_function.SetName("OS_SS_transfer_factors_" + jetbin)
-        grint_Up.SetName("OS_SS_transfer_factors_" + jetbin + "_UP")
-        grint_Down.SetName("OS_SS_transfer_factors_" + jetbin + "_DOWN")
+        transfer_function.SetName("OS_SS_transfer_factors_" + jetbins)
+        grint_Up.SetName("OS_SS_transfer_factors_" + jetbins + "_UP")
+        grint_Down.SetName("OS_SS_transfer_factors_" + jetbins + "_DOWN")
         grint_Up.Write()
         grint_Down.Write()
         transfer_function.Write()
-        c.Print("figures_"+era+"/transfer_factor_drtt_"+ jetbin + ".pdf")
+        c.Print("figures_"+era+"/transfer_factor_drtt_"+ jetbins + ".pdf")
         
        
         # validation factors 
@@ -233,13 +240,13 @@ def main():
 
         outFile.cd()
         transfer_function_validation = ratio_validation.GetFunction("f1");
-        transfer_function_validation.SetName("OS_SS_transfer_factors_validation_" + jetbin)
-        grint_validation_Up.SetName("OS_SS_transfer_factors_validation_" + jetbin + "_UP")
-        grint_validation_Down.SetName("OS_SS_transfer_factors_validation_" + jetbin + "_DOWN")
+        transfer_function_validation.SetName("OS_SS_transfer_factors_validation_" + jetbins)
+        grint_validation_Up.SetName("OS_SS_transfer_factors_validation_" + jetbins + "_UP")
+        grint_validation_Down.SetName("OS_SS_transfer_factors_validation_" + jetbins + "_DOWN")
         grint_validation_Up.Write()
         grint_validation_Down.Write()
         transfer_function_validation.Write()
-        c.Print("figures_"+era+"/transfer_factor_drtt_validation_"+ jetbin + ".pdf")
+        c.Print("figures_"+era+"/transfer_factor_drtt_validation_"+ jetbins + ".pdf")
 
         del h_os
         del h_ss
@@ -262,4 +269,4 @@ def openTree(filename,treename):
          
         
 if __name__ == '__main__':
-    main()
+     main()
