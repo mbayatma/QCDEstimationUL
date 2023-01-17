@@ -22,5 +22,7 @@ os.system(cmd)
 print "Determining non-closure corrections..."
 cmd="python Nonclosurecorrection.py -e "+era
 os.system(cmd)
+print "Determining Isolation corrections"
+cmd="python IsoCorrections.py -e "+era
 
 
