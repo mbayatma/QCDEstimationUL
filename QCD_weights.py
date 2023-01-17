@@ -78,16 +78,6 @@ def main():
         if (jetbins=="njet0") :
             bins = [0.3,1.2,2.0,2.6,3.2,3.8,4.4,5.0,6.0] #v1
             nbins=8
-        #    bins = [0.3,1.2,2.0,2.6,3.2,3.8,4.4,5.0,6.0] #v1
-        #    nbins=8
-        #if (jetbins=="njet0") :
-         #   bins = [0.5,2.5,3,3.5,4,4.5] #v1
-          #  nbins=5 
-        #elif (jetbin=="njet1") :
-        #    bins = [0.5,2.5,3,3.5,4,4.5] #v1
-        #    nbins=5 
-        #else:
-        
         #making histo for os and ss in isolations and antiiso region
         h_os = rt.TH1F("hist_os","hist_os",nbins,array('d',bins))
         h_ss = rt.TH1F("hist_ss","hist_ss",nbins,array('d',bins))
@@ -269,4 +259,4 @@ def openTree(filename,treename):
          
         
 if __name__ == '__main__':
-     main()
+    main()
