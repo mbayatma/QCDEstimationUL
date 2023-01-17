@@ -93,55 +93,65 @@ def main() :
             if process == "data" :
                 weight = 1.0
             else :
-                weight = config.get('COMMON_WEIGHTS', 'weights_common')
+                weight = xsec_lumi_weight
+                #weight = config.get('COMMON_WEIGHTS', 'weights_common')
+            #if pt_1 < config.get('SELECTION','pt_ele_cut') :
+            
             if pt_1 < float(config.get('SELECTION','pt_ele_cut')) :
                 continue
+            
+            #if pt_2 < config.get('SELECTION','pt_muon_cut') :
             if pt_2 < float(config.get('SELECTION','pt_muon_cut')) :
                 continue
+            
             if rt.TMath.Max(pt_1,pt_2) < float(config.get('SELECTION','maxpt_cut')) :
                 continue
+            
             if nbtag!=0 :
                 continue
+                
+                
+                
             # fill histograms for weights for signal region -----------------------------------------------------------------------
             if iso_1 < float(config.get('SELECTION','iso_1')) :
                 if (iso_2 < float(config.get('SELECTION','iso_2')) ) or (float(iso_2 > config.get('SELECTION','iso_max'))) :
                     continue
                 if njets==0 :
                     qcdweight = transfer_functions["njet0"].Eval(dr_tt)
-                #elif njets ==1 :
-                 #   qcdweight = transfer_functions["njet1"].Eval(dr_tt)
-                #else :
-                  #  qcdweight = transfer_functions["njetgt2"].Eval(dr_tt)
+                elif njets ==1 :
+                    qcdweight = transfer_functions["njet1"].Eval(dr_tt)
+                else :
+                    qcdweight = transfer_functions["njetgt2"].Eval(dr_tt)
                 if os > 0.5 :
                     if process == "data" :
                         h_OS.Fill(pt_2,pt_1,weight)
-                    #else :
-                    #    h_OS_bg.Fill(pt_2,pt_1,weight)
+                    else :
+                        h_OS_bg.Fill(pt_2,pt_1,weight)
                 else :
                     if process == "data" :
                         h_SS.Fill(pt_2,pt_1,weight*qcdweight)
-                    #else :
-                     #   h_SS_bg.Fill(pt_2,pt_1,weight*qcdweight)
+                    else :
+                        h_SS_bg.Fill(pt_2,pt_1,weight*qcdweight)
             # fill histograms for weights for validation region -----------------------------------------------------------------------
             if (iso_1 > float(config.get('SELECTION','iso_1')) and iso_1 < float(config.get('SELECTION','iso_max'))) :
                 if (iso_2 < float(config.get('SELECTION','iso_2'))) or (iso_2 > float(config.get('SELECTION','iso_max'))) :
                     continue
                 if njets==0 :
                     qcdweight = transfer_functions_validation["njet0"].Eval(dr_tt)
-                #elif njets ==1 :
-                 #   qcdweight = transfer_functions_validation["njet1"].Eval(dr_tt)
-                #else :
-                 #   qcdweight = transfer_functions_validation["njetgt2"].Eval(dr_tt)
+                elif njets==1 :
+                    qcdweight = transfer_functions_validation["njet1"].Eval(dr_tt)
+                else :
+                    qcdweight = transfer_functions_validation["njetgt2"].Eval(dr_tt)
                 if os > 0.5 :
                     if process == "data" :
                         h_OS_validation.Fill(pt_2,pt_1,weight)
-                    #else :
-                    #    h_OS_bg_validation.Fill(pt_2,pt_1,weight)
+                    else :
+                        h_OS_bg_validation.Fill(pt_2,pt_1,weight)
                 else :
                     if process == "data" :
                         h_SS_validation.Fill(pt_2,pt_1,weight*qcdweight)
-                   # else :
-                    #    h_SS_bg_validation.Fill(pt_2,pt_1,weight*qcdweight)
+                    else :
+                        h_SS_bg_validation.Fill(pt_2,pt_1,weight*qcdweight)
 
     # determine non-closure correction ---------------------------------------------------------------------------------------------------
     h_OS.Add(h_OS_bg,-1.)
