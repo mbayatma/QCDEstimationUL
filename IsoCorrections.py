@@ -70,12 +70,15 @@ def main() :
         h_SS_bg_total = rt.TH2F("hist_ss_bg_total","hist_ss_bg_total",len(binsx)-1,array('d',binsx),len(binsx)-1,array('d',binsy))
         h_OS_bg_total = None
         h_SS_bg_total = None
-        t_Data.Draw("pt_2:pt_1>>OS",preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_os') + "&&" + selection_muon[selection])
+        t_Data.Draw("pt_1:pt_2>>OS",preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_os') + "&&" + selection_muon[selection])
         t_Data.Draw("pt_1:pt_2>>SS",preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_ss') + "&&" + selection_muon[selection])
     
         for bg in bg_trees:
-            bg_trees[bg].Draw("pt_1:pt_2>>OS_bg",weights_common + "(" + preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_os') + "&&" + selection_muon[selection]  + ")")
-            bg_trees[bg].Draw("pt_1:pt_2>>SS_bg",weights_common + "(" + preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_ss') + "&&" + selection_muon[selection] + ")")
+            bg_trees[bg].Draw("pt_1:pt_2>>OS_bg",weights_common + "*(" + preselection + "&&" + selection_electron_antiiso + "&&" + selection_os + "&&" + selection_muon[selection]  + ")")
+            bg_trees[bg].Draw("pt_1:pt_2>>SS_bg",weights_common + "*(" + preselection + "&&" + selection_electron_antiiso + "&&" + selection_ss + "&&" + selection_muon[selection] + ")")
+        
+           #bg_trees[bg].Draw("pt_1:pt_2>>OS_bg",weights_common + "(" + preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_os') + "&&" + selection_muon[selection]  + ")")
+            #bg_trees[bg].Draw("pt_1:pt_2>>SS_bg",weights_common + "(" + preselection + "&&" + config.get('SELECTION','selection_electron_antiiso') + "&&" + config.get('SELECTION','selection_ss') + "&&" + selection_muon[selection] + ")")
             if h_OS_bg_total is None:
                 h_OS_bg_total = h_OS_bg.Clone()
                 h_SS_bg_total = h_SS_bg.Clone()
@@ -130,6 +133,9 @@ def main() :
     iso_correction.Draw("textcolz e")
     c.Update()
     c.Print("figures_"+era+"/iso_correctionserr.pdf")
+    c.SetLogx()
+    c.SetLogy()
+    c.Print("figures_"+era+"/iso_correction_log.pdf")
 
 if __name__ == '__main__':
     main()
